@@ -7,29 +7,41 @@ load_dotenv(os.getenv("ENV_FILE", ".env"))
 
 
 # MQTT Settings
-mqtt_broker_host = "localhost"
-mqtt_broker_port = 1883
-mqtt_topic = "test/topic"
+mqtt_broker_host = os.environ["MQTT_BROKER_HOST"]
+mqtt_broker_port = os.environ["MQTT_BROKER_PORT"]
+mqtt_topic = os.environ["MQTT_TOPIC"]
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-    client.subscribe(mqtt_topic)
+    """
+    Function to create connection
+    """
+    try:
+        print("Connected with result code "+str(rc))
+        client.subscribe(mqtt_topic)
+    except Exception as e:
+        return f"error while connecting the mqtt: {str(e)}"
+    
 
 def on_message(client, userdata, msg):
-    print("test",msg.topic+" "+str(msg.payload))
-    print(msg.payload)
-    # Connect to MongoDB (provide username and password if authentication is enabled)
-    client = pymongo.MongoClient(f"mongodb://{os.environ["MONGO_INITDB_ROOT_USERNAME"]}:{os.environ["MONGO_INITDB_ROOT_PASSWORD"]}@localhost:27017/")
-    # Choose/Create a database
-    db = client["mydatabase"]
-    # Choose/Create a collection (table)
-    user_collection = db["users"]
-    payload_str = msg.payload.decode("utf-8").replace("'", '"')
-    message_data = {
-        "topic": msg.topic,
-        "payload": json.loads(payload_str)
-    }
-    user_collection.insert_one(message_data)
+    """
+    Function to process message and store in database
+    """
+    try:
+        # Connect to MongoDB
+        client = pymongo.MongoClient(f"mongodb://{os.environ["MONGO_INITDB_ROOT_USERNAME"]}:{os.environ["MONGO_INITDB_ROOT_PASSWORD"]}@localhost:27017/")
+        # Choose or Create a database
+        db = client["mydatabase"]
+        # Choose or Create a collection
+        user_collection = db["users"]
+        payload_str = msg.payload.decode("utf-8").replace("'", '"')
+        message_data = {
+            "topic": msg.topic,
+            "payload": json.loads(payload_str)
+        }
+        # Insert data in database
+        user_collection.insert_one(message_data)
+    except Exception as e:
+        return f"error while processing the message: {str(e)}"
 
 
 

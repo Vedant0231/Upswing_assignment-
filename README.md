@@ -13,6 +13,12 @@ The Assignment relies on environment variables to customize its behavior. Below 
 
 - **`MONGO_INITDB_ROOT_PASSWORD`**:  Database password.
 
+- **`MQTT_BROKER_HOST`**:  Broker host.
+
+- **`MQTT_BROKER_PORT`**:  Broker port.
+
+- **`MQTT_TOPIC`**:  Mqtt topic.
+
 Create a `.env` file in the root directory of your project based on the provided `.env.example`. Fill in the required values for each configuration option.
 
 
