@@ -1,0 +1,5 @@
+dnspython==2.6.1
+paho-mqtt==1.5.1
+pika==1.3.2
+pymongo==4.7.0
+python-dotenv==1.0.1
